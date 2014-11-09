@@ -9,6 +9,7 @@ public class Polygon{
 	private float rotCentrX;
 	private float rotCentrY;
 	private float X,Y;
+	private float K;
 	public Polygon()
 	{
 		verts=new ArrayList<Point>();
@@ -16,6 +17,7 @@ public class Polygon{
 		Y=0;
 		rotCentrX=0;
 		rotCentrY=0;
+		K=1;
 	}
 	public Polygon(ArrayList<Point> v)
 	{
@@ -24,12 +26,14 @@ public class Polygon{
 		rotCentrY=0;
 		X=0;
 		Y=0;
+		K=1;
 	}
 	public Polygon(ArrayList<Point> v,float cx, float cy)
 	{
 		verts=v;
 		rotCentrX=cx;
 		rotCentrY=cy;
+		K=1;
 	}
 	public Polygon(ArrayList<Point> v,float x, float y,float cx, float cy)
 	{
@@ -38,6 +42,15 @@ public class Polygon{
 		rotCentrY=cy;
 		X=x;
 		Y=y;
+		K=1;
+	}
+	public void setScale(float k)
+	{
+		K=k;
+	}
+	public float getScale()
+	{
+		return K;
 	}
 	public void setRotCentrX(float x)
 	{
@@ -89,6 +102,10 @@ public class Polygon{
 	}
 	public ArrayList<Point> getRotatedPoints(float rot)
 	{
+		if(rot==0)
+		{
+			return this.verts;
+		}
 		ArrayList<Point> newPoints=new ArrayList<Point>();
 		Point mid=new Point(rotCentrX,rotCentrY);
 		for(int i=0; i<verts.size(); i++)
@@ -101,30 +118,31 @@ public class Polygon{
 			float relY=0;
 			relY=mid.getY()-verts.get(i).getY();
 			double angl=0;
-			if(relX<0 && relY>0)
+			if(relX<=0 && relY>=0)
 			{
 				float h=(relX);
 				angl=Math.acos((h)/dist);
 			}
-			if(relX<0&&relY<0)
+			if(relX<=0&&relY<=0)
 			{
 				float h=(relX);
 				angl=Math.acos((h)/dist)*(-1);
 			}
-			if(relX>0&&relY<0)
+			if(relX>=0&&relY<=0)
 			{
 				float h=(relX);
 				angl=Math.acos((h)/dist)*(-1);
 			}
-			if(relX>0 && relY>0)
+			if(relX>=0 && relY>=0)
 			{
 				float h=(relX);
 				angl=Math.acos((h)/dist);
 			}
-			angl+=rot;
-			float newX=(float) (dist*Math.cos(angl));
-			float newY=(float) (dist*Math.sin(angl));
-			
+			angl-=rot;
+			float newRelX=(float) (K*dist*Math.cos(angl));
+			float newRelY=(float) (K*dist*Math.sin(angl));
+			float newX=newRelX+mid.getX();
+			float newY=mid.getY()-newRelY;
 			newPoints.add(new Point(newX,newY));
 			
 				}
